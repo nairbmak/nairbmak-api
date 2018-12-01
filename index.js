@@ -61,8 +61,8 @@ app.post('/adr-report/save', function (req, res) {
       if (err) {
         return res.status(500).send({ action: `Save file ${fileName} to IPFS`, message: err.message });
       }
-      fs.unlink(__dirname + '/' + fileName);
-      
+      fs.unlink(__dirname + '/' + fileName, () => {});
+
       data = JSON.parse(data);
       res.send({ hash: data.Hash });
     });

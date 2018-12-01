@@ -32,11 +32,14 @@ app.get('/', function (req, res) {
   res.send('Welcome to Nairbmak APIs!');
 });
 
-app.get('/adr-report', function (req, res) {
-  request('http://localhost:5001/api/v0/cat?arg=QmSVit3XXC5fAPGkGmtWJy8KJtNxJJrZ8Smcr8XALabyZK', (err, response, data) => {
+app.get('/adr-report/get', function (req, res) {
+  const { hash } = req.query;
+  request('http://localhost:5001/api/v0/cat?arg='+hash, (err, response, data) => {
+    if (err) return res.status(500).send({ action: 'Get data IPFS file', data: err.message });
+    if (response.statusCode !== 200) return res.status(500).send({ action: 'Get data IPFS file', data: response.body });
     data = JSON.parse(data);
-    const decrypted = JSON.parse(key.decrypt(data.privateInfo, 'utf8'));
-    res.send({ data: decrypted });
+    // const decrypted = JSON.parse(key.decrypt(data.privateInfo, 'utf8'));
+    res.send({ data: data });
   });
 });
 

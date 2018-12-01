@@ -5,6 +5,8 @@ var NodeRSA = require('node-rsa');
 var cors = require('cors');
 var express = require('express');
 var bodyParser = require('body-parser');
+var base58 = require('bs58');
+
 
 var app = express();
 var server = http.createServer(app);
@@ -67,7 +69,7 @@ app.post('/adr-report/save', function (req, res) {
       fs.unlink(__dirname + '/' + fileName, () => {});
 
       data = JSON.parse(data);
-      res.send({ hash: data.Hash });
+      res.send({ hash: base58.decode(data.Hash).toString('hex') });
     });
   });
 });
@@ -87,3 +89,5 @@ function onListening() {
   console.log('*** Listening on ' + bind);
 }
 
+var bytes = Buffer.from("1220933600c9723203d635ebcf90fa4a578c501f5b5cd1086efa7852f1096d4570b2", "hex")
+console.log(base58.encode(bytes))

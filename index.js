@@ -35,11 +35,16 @@ app.get('/', function (req, res) {
 });
 
 app.get('/adr-report/get', function (req, res) {
-  const { hash } = req.query;
+  let { hash, isEncoded } = req.query;
+  if (isEncoded) {
+    var bytes = Buffer.from('1220'+hash, "hex");
+    hash = base58.encode(bytes);
+  }
   request('http://localhost:5001/api/v0/cat?arg='+hash, (err, response, data) => {
     if (err) return res.status(500).send({ action: 'Get data IPFS file', data: err.message });
     if (response.statusCode !== 200) return res.status(500).send({ action: 'Get data IPFS file', data: response.body });
     data = JSON.parse(data);
+    data['hash'] = hash;
     // const decrypted = JSON.parse(key.decrypt(data.privateInfo, 'utf8'));
     res.send({ data: data });
   });
@@ -69,7 +74,8 @@ app.post('/adr-report/save', function (req, res) {
       fs.unlink(__dirname + '/' + fileName, () => {});
 
       data = JSON.parse(data);
-      res.send({ hash: base58.decode(data.Hash).toString('hex') });
+      const hex = base58.decode(data.Hash).toString('hex');
+      res.send({ hash: hex.substr(4) });
     });
   });
 });
@@ -88,6 +94,3 @@ function onListening() {
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   console.log('*** Listening on ' + bind);
 }
-
-var bytes = Buffer.from("1220933600c9723203d635ebcf90fa4a578c501f5b5cd1086efa7852f1096d4570b2", "hex")
-console.log(base58.encode(bytes))

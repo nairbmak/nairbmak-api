@@ -37,10 +37,10 @@ app.get('/', function (req, res) {
 app.get('/adr-report/get', function (req, res) {
   let { hash, isEncoded } = req.query;
   if (isEncoded) {
-    var bytes = Buffer.from('1220'+hash, "hex");
+    var bytes = Buffer.from('1220' + hash, "hex");
     hash = base58.encode(bytes);
   }
-  request('http://localhost:5001/api/v0/cat?arg='+hash, (err, response, data) => {
+  request('http://localhost:5001/api/v0/cat?arg=' + hash, (err, response, data) => {
     if (err) return res.status(500).send({ action: 'Get data IPFS file', data: err.message });
     if (response.statusCode !== 200) return res.status(500).send({ action: 'Get data IPFS file', data: response.body });
     data = JSON.parse(data);
@@ -52,13 +52,13 @@ app.get('/adr-report/get', function (req, res) {
 
 app.post('/adr-report/save', function (req, res) {
   const data = req.body;
- 
+
   const encrypted = key.encrypt(JSON.stringify(data.privateInfo), 'base64');
   data.privateInfo = encrypted;
 
   const fileName = "adr-report-" + Date.now() + '.json';
 
-  fs.writeFile(fileName, JSON.stringify(data), function(err) {
+  fs.writeFile(fileName, JSON.stringify(data), function (err) {
     if (err) {
       return res.status(500).send({ action: 'Save JSON file', message: err.message });
     }
@@ -67,11 +67,11 @@ app.post('/adr-report/save', function (req, res) {
       file: fs.createReadStream(__dirname + '/' + fileName),
     };
 
-    request({ url:'http://localhost:5001/api/v0/add', formData: formData }, function (err, response, data) {
+    request({ url: 'http://localhost:5001/api/v0/add', formData: formData }, function (err, response, data) {
       if (err) {
         return res.status(500).send({ action: `Save file ${fileName} to IPFS`, message: err.message });
       }
-      fs.unlink(__dirname + '/' + fileName, () => {});
+      fs.unlink(__dirname + '/' + fileName, () => { });
 
       data = JSON.parse(data);
       const hex = base58.decode(data.Hash).toString('hex');
@@ -81,7 +81,7 @@ app.post('/adr-report/save', function (req, res) {
 });
 
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.status(404).send("Sorry, that route doesn't exist.");
 });
 

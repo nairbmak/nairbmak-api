@@ -1,7 +1,6 @@
 const config = global.config;
 const property = global.property;
 
-var request = require('request');
 var base58 = require('bs58');
 var IPFS = require('ipfs-http-client');
 

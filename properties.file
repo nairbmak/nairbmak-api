@@ -1,0 +1,4 @@
+# Invalid inputs
+error.400.1 = {"status": 400, "message": "Invalid inputs"}
+error.400.2 = {"status": 400, "message": "Cannot get document coressponding with hash"}
+error.400.3 = {"status": 400, "message": "Cannot set document"}

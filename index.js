@@ -1,93 +1,84 @@
-var fs = require('fs');
 var http = require('http');
-var request = require('request');
-var NodeRSA = require('node-rsa');
 var cors = require('cors');
 var express = require('express');
 var bodyParser = require('body-parser');
-var base58 = require('bs58');
+var propertiesReader = require('properties-reader');
 
 
+/**
+ * Watch env and config
+ */
+const env = process.env.NODE_ENV || 'development';
+console.log('*** Environment:', env);
+
+
+/**
+ * Config
+ */
+const config = require('./config')[env];
+global.config = config;
+
+/**
+ * Status code and message error
+ */
+var properties = propertiesReader('./properties.file');
+global.property = function (code) { return JSON.parse(properties.get(code)); }
+
+
+/**
+ * Creating express server
+ */
 var app = express();
 var server = http.createServer(app);
 
-const keyData = `-----BEGIN RSA PRIVATE KEY-----
-MIIBOQIBAAJBAKx+OtReHHYaWbBmqFr6doJhHkGZLTJ1mkjyrkuR9SzFZcTzQvf4
-o59wrsxNR6y2RVSMzpIeAxp5qepv5ipwPrECAwEAAQJAGIe7Bgh8M697ocJ3nriP
-sertypZl/w8KaeVZNBYFr+AG0U+tPYL9TD+OMZecJ28/Bd22bN7X4oPEazlC9tvB
-gQIhANpA/Ov0TlHd4S5k9eq4myetvGXm04q6BfmSlwc5qIRFAiEAylM4ha1M2gRy
-3jPDGUyRmXIqYqpEaBQZ1+ytMR72FX0CIG2LfOb5Ym4YzbM5nWzIZ6fMvejvqHHS
-2LjhaMiJmhl5AiB+Ux2sYTrluPdbg2giKKuT6jNKrVLOxRYpui2cyN8PJQIgauTa
-P6o7LSIaf07Wph7bnz+dvjzsEu1DQ8FLKM1W068=
------END RSA PRIVATE KEY-----`;
 
-const key = new NodeRSA(keyData);
-key.setOptions({
-  encryptionScheme: 'pkcs1'
-});
+/**
+ * Middlewares
+ */
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', function (req, res) {
-  res.send('Welcome to Nairbmak APIs!');
-});
 
-app.get('/adr-report/get', function (req, res) {
-  let { hash, isEncoded } = req.query;
-  if (isEncoded) {
-    var bytes = Buffer.from('1220' + hash, "hex");
-    hash = base58.encode(bytes);
-  }
-  request('http://localhost:5001/api/v0/cat?arg=' + hash, (err, response, data) => {
-    if (err) return res.status(500).send({ action: 'Get data IPFS file', data: err.message });
-    if (response.statusCode !== 200) return res.status(500).send({ action: 'Get data IPFS file', data: response.body });
-    data = JSON.parse(data);
-    data['hash'] = hash;
-    // const decrypted = JSON.parse(key.decrypt(data.privateInfo, 'utf8'));
-    res.send({ data: data });
-  });
-});
+/**
+ * Router
+ */
 
-app.post('/adr-report/save', function (req, res) {
-  const data = req.body;
+// Main APIs
+var api = require('./routes/api');
+app.use('/', api);
 
-  const encrypted = key.encrypt(JSON.stringify(data.privateInfo), 'base64');
-  data.privateInfo = encrypted;
-
-  const fileName = "adr-report-" + Date.now() + '.json';
-
-  fs.writeFile(fileName, JSON.stringify(data), function (err) {
-    if (err) {
-      return res.status(500).send({ action: 'Save JSON file', message: err.message });
-    }
-
-    var formData = {
-      file: fs.createReadStream(__dirname + '/' + fileName),
-    };
-
-    request({ url: 'http://localhost:5001/api/v0/add', formData: formData }, function (err, response, data) {
-      if (err) {
-        return res.status(500).send({ action: `Save file ${fileName} to IPFS`, message: err.message });
-      }
-      fs.unlink(__dirname + '/' + fileName, () => { });
-
-      data = JSON.parse(data);
-      const hex = base58.decode(data.Hash).toString('hex');
-      res.send({ hash: hex.substr(4) });
-    });
-  });
-});
+// Error handler
+var { uncatchableAPI, errorHandler } = require('./routes/error');
+app.use(uncatchableAPI);
+app.use(errorHandler);
 
 
-app.use(function (req, res, next) {
-  res.status(404).send("Sorry, that route doesn't exist.");
-});
+/**
+ * Start server
+ */
 
-
-server.listen(3002);
+server.listen(config.PORT);
+server.on('error', onError);
 server.on('listening', onListening);
+
+function onError(error) {
+  if (error.syscall !== 'listen') throw error;
+  var bind = typeof config.server.PORT === 'string' ? 'Pipe ' + config.server.PORT : 'Port ' + config.server.PORT;
+  switch (error.code) {
+    case 'EACCES':
+      console.log(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.log(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
 
 function onListening() {
   var addr = server.address();

@@ -17,15 +17,22 @@ module.exports = {
     return res.send('Welcome to Nairbmak API!');
   },
 
-  get: function (req, res, next) {
-    var { hash, isEncoded } = req.query;
+  encode: function (req, res, next) {
+    var hash = req.query.hash;
     if (!hash) return next(property('error.400.1'));
 
-
-    if (isEncoded) {
+    if (hash.length == 64) {
       var bytes = Buffer.from('1220' + hash, "hex");
       hash = base58.encode(bytes);
     }
+
+    req.query.hash = hash;
+    return next();
+  },
+
+  get: function (req, res, next) {
+    var hash = req.query.hash;
+    if (!hash) return next(property('error.400.1'));
 
     ipfs.cat(hash).then(re => {
       return res.send({ status: 'OK', data: JSON.parse(re) });

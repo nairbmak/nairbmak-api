@@ -7,7 +7,7 @@ var ipfs = require('../controllers/ipfs.controller');
  * GET
  */
 router.get('/', ipfs.welcome);
-router.get('/report/get', ipfs.get);
+router.get('/report/get', ipfs.encode, ipfs.get);
 
 /**
  * POST

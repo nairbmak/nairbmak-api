@@ -37,6 +37,7 @@ module.exports = {
     ipfs.cat(hash).then(re => {
       return res.send({ status: 'OK', data: JSON.parse(re) });
     }).catch(er => {
+      console.error(er);
       return next(property('error.400.1'));
     });
   },
@@ -53,6 +54,7 @@ module.exports = {
     ipfs.add(Buffer.from(JSON.stringify(data))).then(re => {
       return res.send({ status: 'OK', data: re[0] });
     }).catch(er => {
+      console.error(er);
       return next(property('error.400.2'));
     });
   }

@@ -21,6 +21,7 @@ module.exports = {
     var hash = req.query.hash;
     if (!hash) return next(property('error.400.1'));
 
+    if (hash.length == 66) hash = hash.replace('0x', '');
     if (hash.length == 64) {
       var bytes = Buffer.from('1220' + hash, "hex");
       hash = base58.encode(bytes);
@@ -43,7 +44,7 @@ module.exports = {
   },
 
   set: function (req, res, next) {
-    var data = req.body;
+    var data = req.body.data;
     if (!data) return next(property('error.400.2'));
 
     if (data.privateInfo) {

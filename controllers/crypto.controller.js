@@ -14,12 +14,12 @@ module.exports = {
 
     if (!data) return next(property('error.400.2'));
 
-    if (data.PhanThamDinhADRCuaDonVi) {
-      data.PhanThamDinhADRCuaDonVi = crypto.encrypt(data.PhanThamDinhADRCuaDonVi);
+    if (data.TheADRAssessment) {
+      data.TheADRAssessment = crypto.encrypt(data.TheADRAssessment);
     }
 
-    if (data.ThongTinVeNguoiDonViGuiBaoCao) {
-      data.ThongTinVeNguoiDonViGuiBaoCao = crypto.encrypt(data.ThongTinVeNguoiDonViGuiBaoCao);
+    if (data.ParticularsOfReporter) {
+      data.ParticularsOfReporter = crypto.encrypt(data.ParticularsOfReporter);
     }
 
     req.body.data = data;

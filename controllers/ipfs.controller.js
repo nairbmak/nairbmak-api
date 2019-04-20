@@ -4,6 +4,8 @@ const property = global.property;
 var base58 = require('bs58');
 var IPFS = require('ipfs-http-client');
 
+const encrypts = require('../helpers/encrypts');
+
 var ipfs = IPFS({
   host: config.IPFS.URL,
   port: config.IPFS.PORT,
@@ -47,9 +49,12 @@ module.exports = {
     var data = req.body.data;
     if (!data) return next(property('error.400.2'));
 
-    if (data.privateInfo) {
-      var encrypted = config.PRIVATE_KEY.encrypt(JSON.stringify(data.privateInfo), 'base64');
-      data.privateInfo = encrypted;
+    if (data.PhanThamDinhADRCuaDonVi) {
+      data.PhanThamDinhADRCuaDonVi = encrypts.rsa(data.PhanThamDinhADRCuaDonVi);
+    }
+
+    if (data.ThongTinVeNguoiDonViGuiBaoCao) {
+      data.ThongTinVeNguoiDonViGuiBaoCao = encrypts.rsa(data.ThongTinVeNguoiDonViGuiBaoCao);
     }
 
     ipfs.add(Buffer.from(JSON.stringify(data))).then(re => {

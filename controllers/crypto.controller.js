@@ -32,12 +32,12 @@ module.exports = {
 
     if (!data) return next(property('error.400.2'));
 
-    if (data.PhanThamDinhADRCuaDonVi) {
-      data.PhanThamDinhADRCuaDonVi = crypto.decrypt(data.PhanThamDinhADRCuaDonVi);
+    if (data.TheADRAssessment) {
+      data.TheADRAssessment = crypto.decrypt(data.TheADRAssessment);
     }
 
-    if (data.ThongTinVeNguoiDonViGuiBaoCao) {
-      data.ThongTinVeNguoiDonViGuiBaoCao = crypto.decrypt(data.ThongTinVeNguoiDonViGuiBaoCao);
+    if (data.ParticularsOfReporter) {
+      data.ParticularsOfReporter = crypto.decrypt(data.ParticularsOfReporter);
     }
 
     req.body.data = data;

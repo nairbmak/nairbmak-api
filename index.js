@@ -1,4 +1,4 @@
-var https = require('https');
+var http = require('http');
 var fs = require('fs');
 var cors = require('cors');
 var express = require('express');
@@ -30,10 +30,7 @@ global.property = function (code) { return JSON.parse(properties.get(code)); }
  * Creating express server
  */
 var app = express();
-var server = https.createServer({
-  key: fs.readFileSync('certs/server.key'),
-  cert: fs.readFileSync('certs/server.cert')
-}, app);
+var server = http.createServer(app);
 
 
 /**

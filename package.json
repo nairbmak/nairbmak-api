@@ -12,7 +12,8 @@
     "express": "^4.16.4",
     "ipfs-http-client": "^30.1.0",
     "node-rsa": "^1.0.1",
-    "properties-reader": "0.0.16"
+    "properties-reader": "0.0.16",
+    "secp256k1": "^3.6.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

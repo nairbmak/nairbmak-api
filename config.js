@@ -24,6 +24,10 @@ config.development = {
     PORT: 5001,
     PROTOCOL: 'http'
   },
+  RETAIL: {
+    ADDRESS: '0x76d8b624efddd1e9fc4297f82a2689315ac62d82',
+    MIN_VALUE: 1
+  }
 };
 
 /**
@@ -45,6 +49,10 @@ config.production = {
     PORT: 5001,
     PROTOCOL: 'http'
   },
+  RETAIL: {
+    ADDRESS: '0x76d8b624efddd1e9fc4297f82a2689315ac62d82',
+    MIN_VALUE: 1
+  }
 };
 
 /**

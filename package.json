@@ -9,11 +9,13 @@
     "body-parser": "^1.18.3",
     "bs58": "^4.0.1",
     "cors": "^2.8.5",
+    "ethereumjs-abi": "^0.6.7",
     "express": "^4.16.4",
     "ipfs-http-client": "^30.1.0",
     "node-rsa": "^1.0.1",
     "properties-reader": "0.0.16",
-    "secp256k1": "^3.6.2"
+    "secp256k1": "^3.6.2",
+    "web3": "^0.20.7"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
